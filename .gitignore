@@ -5,3 +5,5 @@
 /.vs
 /Kohde.Assessment/obj/Debug
 /Kohde.Assessment.UnitTest/obj/Debug
+/Kohde.Assessment/bin/Debug
+/Kohde.Assessment.UnitTest/bin/Debug
