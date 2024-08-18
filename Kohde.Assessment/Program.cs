@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Kohde.Assessment.Container;
+using Kohde.Assessment.Interfaces;
+using Kohde.Assessment.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -170,20 +173,20 @@ namespace Kohde.Assessment
             // > DECLARE ALL THE METHODS WITHIN THE PROGRAM CLASS !!
             // > DO NOT ALTER THE EXISTING CODE
 
-            /*  
-                const string abc = "asduqwezxc";
-                foreach (var vowel in abc.SelectOnlyVowels())
-                {
-                    Console.WriteLine("{0}", vowel);
-                }
-            */
+
+            const string abc = "asduqwezxc";
+            foreach (var vowel in abc.SelectOnlyVowels())
+            {
+                Console.WriteLine("{0}", vowel);
+            }
+
             // < REQUIRED OUTPUT => a u e
 
             // > UNCOMMENT THE CODE BELOW AND CREATE A METHOD SO THAT THE FOLLOWING CODE WILL WORK
             // > DECLARE ALL THE METHODS WITHIN THE PROGRAM CLASS !!
             // > DO NOT ALTER THE EXISTING CODE
 
-            /*
+            
             List<Dog> dogs = new List<Dog>
             {
                 new Dog {Age = 8, Name = "Max"},
@@ -207,7 +210,6 @@ namespace Kohde.Assessment
             // < CATS REQUIRED OUTPUT =>
             //      Name: Capri Age: 1
             //      Name: Captain Hooks Age: 3
-            */
 
             #endregion
 
@@ -221,6 +223,10 @@ namespace Kohde.Assessment
         {
             const int sLen = 30, loops = 500000; // YOU MAY NOT CHANGE THE NUMBER OF LOOPS IN ANY WAY !!
             var source = new string('X', sLen);
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // Without using string builder it has to allocate more memory for every append as it creates a new string
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             StringBuilder builder = new StringBuilder();
 
@@ -239,6 +245,11 @@ namespace Kohde.Assessment
         public static int GetFirstEvenValue(List<int> numbers)
         {
             // RETURN THE FIRST EVEN NUMBER IN THE SEQUENCE
+
+            ///////////////////////////////////////////////////////////////////////////////
+            // Use FirstOrDefault to find the first value that matches the given condition.
+            ///////////////////////////////////////////////////////////////////////////////
+            
             var first = numbers.FirstOrDefault(x => x % 2 == 0);
             return first;
         }
@@ -246,7 +257,12 @@ namespace Kohde.Assessment
         public static string GetSingleStringValue(List<string> stringList)
         {
             // THE OUTPUT MUST RENDER THE FIRST ITEM THAT CONTAINS AN 'a' INSIDE OF IT
-            var first = stringList.FirstOrDefault(x => x.Contains("a"));
+
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            // Use FirstOrDefault to find the first value that matches the given condition.
+            // The previous use of Single() will throw an error if more than 1 string matches the condition.
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            var first = stringList.FirstOrDefault(x => x.Contains("a")); 
             return first;
         }
 
@@ -259,7 +275,9 @@ namespace Kohde.Assessment
             // IMPROVE THE FOLLOWING PIECE OF CODE
             // as well as the PerformSomeLongRunningOperation method
 
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
             // Added using statement and removed try catch as this ensures that the dispose method gets called.
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
             using (var disposableObject = new DisposableObject())
             {
                 disposableObject.PerformSomeLongRunningOperation();
@@ -278,7 +296,11 @@ namespace Kohde.Assessment
             Console.WriteLine("Name:" + mammal.Name + " Age: " + mammal.Age);
         }
 
-        // T is the type of the object being passed and ResultT is the output as a result of the function being passed when calling this method using the lambda expression where its implemented.
+        /////////////////////////////////////////////////////////////////////////////////////
+        // T is the type of the object being passed and ResultT is the output as a result
+        // of the function being passed when calling this method using the lambda expression
+        // where its invoked.
+        /////////////////////////////////////////////////////////////////////////////////////
         public static ResultT GenericTester<T, ResultT>(Func<T, ResultT> func, T generic) where T : class, new()
         {
             if (generic == null)
@@ -291,7 +313,10 @@ namespace Kohde.Assessment
 
         #region Assessment G Methods
 
-        public static void CatchAndRethrowExplicitly() // this throws the exception again after catching it. Removed the e symbol.
+        ////////////////////////////////////////////////////////////////////////////////////
+        // This function throws the exception again after catching it. Removed the e symbol.
+        ////////////////////////////////////////////////////////////////////////////////////
+        public static void CatchAndRethrowExplicitly()
         {
             try
             {
@@ -356,12 +381,50 @@ namespace Kohde.Assessment
              */
 
             // 1. register the interfaces and classes
-            // TODO: ???
+
+            //Registering the interfaces with the classes enables it to inject it with a new instance of the concrete class in this case DeviceProcessor and SamsungDevice.
+            Ioc.Container.Register<IDeviceProcessor, DeviceProcessor>();
+            Ioc.Container.Register<IDevice, SamsungDevice>();
 
             // 2. resolve the IDeviceProcessor
-            //var deviceProcessor = ???
+            var deviceProcessor = Ioc.Container.Resolve<IDeviceProcessor>();
             // call the GetDevicePrice method
-            //Console.WriteLine(deviceProcessor.GetDevicePrice());
+            Console.WriteLine(deviceProcessor.GetDevicePrice());
+        }
+
+        // since the above code calls this method as an extension of the provided string it is declared as an extension method.
+        static List<char> SelectOnlyVowels(this string str)
+        {
+            List<char> vowels = new List<char> { 'a', 'e', 'i', 'o', 'u' };
+            char[] arr = str.ToCharArray();
+            List<char> newList = new List<char>();
+
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (vowels.Any(vow => vow == arr[i]))
+                {
+                    newList.Append(arr[i]);
+                }
+            }
+
+            return newList;
+        }
+
+        // Since this extension function is shared between the two implementations above, it needs to not only accept a parameter for a generic type list but also a function that returns a boolean.
+        static List<T> CustomWhere<T>(this List<T> list, Func<T, bool> func) where T : IMammal
+        {
+            List<T> newList = new List<T>();
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (!func(list[i]))
+                {
+                    newList.Add(list[i]);
+                }
+            }
+
+            return newList;
         }
 
         #endregion

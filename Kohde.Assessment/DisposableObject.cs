@@ -12,12 +12,19 @@ namespace Kohde.Assessment
 
         public void PerformSomeLongRunningOperation()
         {
-            // Better to use standard for loop if you know the range in terms of performance
+            ////////////////////////////////////////////////////////////////////////
+            // Better to use standard for loop if you know the range for performance
+            ////////////////////////////////////////////////////////////////////////
             for (int i = 1; i < 11; i++)
+            {
                 this.SomethingHappened += HandleSomethingHappened;
+            }
 
         }
 
+        ////////////////////////////////////////////////
+        // Changed the null check to use null coalescing
+        ////////////////////////////////////////////////
         public void RaiseEvent(string data)
         {
             this.SomethingHappened?.Invoke(data);
@@ -31,12 +38,12 @@ namespace Kohde.Assessment
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                // Dispose managed resources
-            }
+                if (disposing)
+                {
+                    // Dispose managed resources
+                }
 
-            // Free native resources
+                // Free native resources
         }
 
         public void Dispose()
