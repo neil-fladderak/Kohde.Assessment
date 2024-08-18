@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Kohde.Assessment
 {
@@ -13,23 +12,20 @@ namespace Kohde.Assessment
 
         public void PerformSomeLongRunningOperation()
         {
-            foreach (var i in Enumerable.Range(1, 10))
-            {
+            // Better to use standard for loop if you know the range in terms of performance
+            for (int i = 1; i < 11; i++)
                 this.SomethingHappened += HandleSomethingHappened;
-            }
+
         }
 
         public void RaiseEvent(string data)
         {
-            if (this.SomethingHappened != null)
-            {
-                this.SomethingHappened(data);
-            }
+            this.SomethingHappened?.Invoke(data);
         }
 
         private void HandleSomethingHappened(string foo)
         {
-            this.Counter = this.Counter + 1;
+            this.Counter++;
             Console.WriteLine("HIT {0} => HandleSomethingHappened. Data: {1}", this.Counter, foo);
         }
 
